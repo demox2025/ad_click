@@ -5,113 +5,33 @@
     <title>Monetag Earning App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     
     <style>
-        :root {
-            --bg-color: #1c2128;
-            --card-bg-color: #22272e;
-            --border-color: #373e47;
-            --text-primary: #e6edf3;
-            --text-secondary: #7d8590;
-            --accent-color: #58a6ff;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color); 
-            color: var(--text-primary);
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            width: 100%;
-            max-width: 400px;
-        }
-        .card {
-            background-color: var(--card-bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        #user-info {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        h2 {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--accent-color);
-            margin-bottom: 15px;
-        }
-        #status-message {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            min-height: 24px;
-        }
-
-        /* --- Updated Button Style --- */
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            margin-top: 15px; /* Increased margin */
-            font-size: 16px;
-            font-weight: 600; /* Bolder font */
-            color: #fff;
-            /* New attractive gradient background */
-            background: linear-gradient(45deg, #f761a1 0%, #8c1bab 100%);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            letter-spacing: 0.5px;
-            /* New subtle shadow */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        .btn:active {
-            transform: scale(0.97);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-        .btn:disabled {
-            background: #444c56;
-            cursor: not-allowed;
-            opacity: 0.7;
-            box-shadow: none;
-        }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--card-bg-color); padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
-        .ad-bait-box { height: 1px; width: 1px; opacity: 0; position: absolute; }
+        /* আপনার দেওয়া CSS কোড এখানে অপরিবর্তিত আছে */
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1e3c72, #2a5298); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #fff; box-sizing: border-box; }
+        .container { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 30px; border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); text-align: center; width: 90%; max-width: 400px; }
+        h2 { margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; }
+        #status-message { font-size: 16px; color: #feb47b; margin-bottom: 25px; min-height: 24px; }
+        .btn { display: block; width: 100%; padding: 14px; margin: 10px 0; font-size: 16px; font-weight: 500; color: #fff; background: linear-gradient(90deg, #ff7e5f, #feb47b); border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .btn:disabled { background: linear-gradient(90deg, #555, #777); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: #2a5298; padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+        .ad-bait-box { height: 1px; width: 1px; opacity: 0.01; position: absolute; left: -9999px; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="card">
-            <div id="user-info">Fetching user info...</div>
-        </div>
-
-        <div class="card" id="appContainer">
-            <h2>📺 Monetag Ads Menu</h2>
-            <p id="status-message">Loading your tasks...</p>
-            <button class="btn" id="btn1" onclick="triggerAd(mainAd)">Main Ad</button>
-            <button class="btn" id="btn2" onclick="triggerAd(rewardedInterstitial)">🎯 Rewarded Interstitial</button>
-            <button class="btn" id="btn3" onclick="triggerAd(rewardedPopup)">💡 Rewarded Popup</button>
-            <button class="btn" id="btn4" onclick="triggerAd(inAppInterstitial)">📱 In-app Interstitial</button>
-        </div>
+    <div class="container" id="appContainer">
+        <h2>📺 Monetag Ads Menu</h2>
+        <p id="status-message">Loading your tasks...</p>
+        <button class="btn" id="btn1" onclick="triggerAd(mainAd)">Main Ad</button>
+        <button class="btn" id="btn2" onclick="triggerAd(rewardedInterstitial)">🎯 Rewarded Interstitial</button>
+        <button class="btn" id="btn3" onclick="triggerAd(rewardedPopup)">💡 Rewarded Popup</button>
+        <button class="btn" id="btn4" onclick="triggerAd(inAppInterstitial)">📱 In-app Interstitial</button>
     </div>
 
     <div id="adBlockerModal" class="modal-overlay">
@@ -135,6 +55,7 @@
             messagingSenderId: "869252931686",
             appId: "1:869252931686:web:668ec92d232f0e2dc24da7"
         };
+        
         const MAX_CLICKS_PER_DAY = 9;
 
         // --- Firebase Initialization ---
@@ -142,22 +63,24 @@
         const db = firebase.firestore();
         const adClicksCollection = db.collection('ad_clicks');
         
-        // --- UI Elements ---
+        // --- DO NOT EDIT BELOW ---
         const statusMessage = document.getElementById('status-message');
-        const userInfoDisplay = document.getElementById('user-info');
         const adButtons = document.querySelectorAll('.btn');
+        const appContainer = document.getElementById('appContainer');
         const adBlockerModal = document.getElementById('adBlockerModal');
         const baitElement = document.querySelector('.ad-bait-box');
-        
         let userIp = null;
         let clicksToday = 0;
         let userDocId = null;
 
-        function checkAdBlocker() { setTimeout(() => { if (baitElement.offsetHeight === 0) { document.querySelector('.container').style.display = 'none'; adBlockerModal.style.display = 'flex'; } }, 300); }
+        function checkAdBlocker() { setTimeout(() => { if (baitElement.offsetHeight === 0) { appContainer.style.display = 'none'; adBlockerModal.style.display = 'flex'; } }, 300); }
+        
+        // --- Monetag Ad Functions (এখন এরা একটি সিগন্যাল/প্রমিস রিটার্ন করে) ---
         function mainAd() { return show_9716851(); }
         function rewardedInterstitial() { return show_9716851(); }
         function rewardedPopup() { return show_9716851('pop'); }
         function inAppInterstitial() { return show_9716851({ type: 'inApp' }); }
+
         function getTodayDateString() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
         function disableAllButtons() { adButtons.forEach(button => { button.disabled = true; }); }
         
@@ -168,12 +91,19 @@
             
             const newCount = clicksToday + 1;
             try {
+                // প্রথমে ডেটাবেসে ক্লিক সংখ্যা আপডেট করি
                 await adClicksCollection.doc(userDocId).update({ clicks_today: newCount });
+                
+                // তারপর অ্যাডটি দেখাই এবং এটি বন্ধ হওয়ার জন্য অপেক্ষা করি
                 await adFunction();
+                
+                // অ্যাড বন্ধ হওয়ার সাথে সাথেই পেজটি রিলোড করি
                 location.reload();
+
             } catch (e) {
                 console.error("Ad/DB Error:", e);
                 statusMessage.textContent = 'Ad could not be shown. Please try again.';
+                // অ্যাড যদি কোনো কারণে না দেখানো যায়, তাহলে ৫ সেকেন্ড পর রিলোড হবে যাতে বাটনগুলো আবার চালু হয়
                 setTimeout(() => { location.reload(); }, 5000);
             }
         }
@@ -183,16 +113,10 @@
             try { window.Telegram.WebApp.ready(); } catch (e) {}
 
             try {
-                const response = await fetch('http://ip-api.com/json');
+                const response = await fetch('https://api.ipify.org?format=json');
                 const data = await response.json();
-                userIp = data.query;
-                userInfoDisplay.innerHTML = `📍 IP: <strong>${data.query}</strong> | 🏳️ Country: <strong>${data.country}</strong>`;
-            } catch (error) {
-                statusMessage.textContent = 'Network error. Please refresh.';
-                userInfoDisplay.textContent = 'Could not fetch user info.';
-                disableAllButtons(); 
-                return; 
-            }
+                userIp = data.ip;
+            } catch (error) { statusMessage.textContent = 'Network error. Please refresh.'; disableAllButtons(); return; }
             
             const todayStr = getTodayDateString();
             const querySnapshot = await adClicksCollection.where('ip_address', '==', userIp).get();
@@ -207,7 +131,7 @@
                 const userData = userDoc.data();
                 
                 if (userData.last_click_date === todayStr) {
-                    clicksToday = userData.clicks_today || 0;
+                    clicksToday = userData.clicks_today;
                 } else {
                     await adClicksCollection.doc(userDocId).update({ clicks_today: 0, last_click_date: todayStr });
                     clicksToday = 0;
@@ -215,7 +139,7 @@
             }
 
             if (clicksToday >= MAX_CLICKS_PER_DAY) {
-                statusMessage.textContent = `Daily limit reached (${clicksToday}/${MAX_CLICKS_PER_DAY}).`;
+                statusMessage.textContent = `Daily limit reached (${clicksToday}/${MAX_CLICKS_PER_DAY}). Come back tomorrow!`;
                 disableAllButtons();
             } else {
                 statusMessage.textContent = `Tasks completed today: ${clicksToday}/${MAX_CLICKS_PER_DAY}`;
